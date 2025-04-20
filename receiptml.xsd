@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://example.com/receiptml"
+           xmlns="http://example.com/receiptml"
+           elementFormDefault="qualified">
+
+  <!-- 1. Root element -->
+  <xs:element name="receipt">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="config" minOccurs="0" maxOccurs="1"/>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="initialize"/>
+          <xs:element ref="codepage"/>
+          <xs:element ref="text"/>
+          <xs:element ref="line"/>
+          <xs:element ref="newline"/>
+          <xs:element ref="rule"/>
+          <xs:element ref="table"/>
+          <xs:element ref="barcode"/>
+          <xs:element ref="qrcode"/>
+          <xs:element ref="image"/>
+          <xs:element ref="cut"/>
+          <xs:element ref="raw"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- 2. Optional configuration block -->
+  <xs:element name="config">
+    <xs:complexType>
+      <xs:attribute name="printerModel"   type="xs:string" use="optional"/>
+      <xs:attribute name="language"       use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="esc-pos"/>
+            <xs:enumeration value="star-prnt"/>
+            <xs:enumeration value="star-line"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="columns"        type="xs:integer" use="optional"/>
+      <xs:attribute name="feedBeforeCut"  type="xs:integer" use="optional"/>
+      <xs:attribute name="newline"        type="xs:string"  use="optional"/>
+      <xs:attribute name="imageMode"      use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="column"/>
+            <xs:enumeration value="raster"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- 3. Simple empty elements -->
+  <xs:element name="initialize" type="xs:empty"/>
+  <xs:element name="line"       type="xs:empty"/>
+
+  <!-- 4. codepage -->
+  <xs:element name="codepage">
+    <xs:complexType>
+      <xs:attribute name="id" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- 5. text -->
+  <xs:element name="text">
+    <xs:complexType mixed="true">
+      <xs:attribute name="align" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="left"/>
+            <xs:enumeration value="center"/>
+            <xs:enumeration value="right"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="style" type="xs:string" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- 6. newline -->
+  <xs:element name="newline">
+    <xs:complexType>
+      <xs:attribute name="count" type="xs:integer" use="optional" default="1"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- 7. rule -->
+  <xs:element name="rule">
+    <xs:complexType>
+      <xs:attribute name="style" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="single"/>
+            <xs:enumeration value="double"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="width" type="xs:integer" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- 8. table / tr / td -->
+  <xs:element name="table">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="tr" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="td" type="tdType" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="columns" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="tdType" mixed="true">
+    <xs:attribute name="align" use="optional">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="left"/>
+          <xs:enumeration value="center"/>
+          <xs:enumeration value="right"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+
+  <!-- 9. barcode -->
+  <xs:element name="barcode">
+    <xs:complexType mixed="true">
+      <xs:attribute name="type"   type="xs:string"  use="optional"/>
+      <xs:attribute name="height" type="xs:integer" use="optional"/>
+      <xs:attribute name="width"  type="xs:integer" use="optional"/>
+      <xs:attribute name="text"   type="xs:string"  use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- 10. qrcode -->
+  <xs:element name="qrcode">
+    <xs:complexType mixed="true">
+      <xs:attribute name="model"      type="xs:integer" use="optional"/>
+      <xs:attribute name="size"       type="xs:integer" use="optional"/>
+      <xs:attribute name="errorlevel" type="xs:string"  use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- 11. image -->
+  <xs:element name="image">
+    <xs:complexType mixed="true">
+      <xs:attribute name="width"  type="xs:integer" use="optional"/>
+      <xs:attribute name="height" type="xs:integer" use="optional"/>
+      <xs:attribute name="dither" type="xs:string"  use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- 12. cut -->
+  <xs:element name="cut">
+    <xs:complexType>
+      <xs:attribute name="type" type="xs:string" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- 13. raw -->
+  <xs:element name="raw">
+    <xs:complexType>
+      <xs:attribute name="bytes" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
